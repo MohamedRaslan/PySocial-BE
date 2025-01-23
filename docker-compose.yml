@@ -6,16 +6,19 @@ services:
     container_name: postgres-db
     hostname: postgres-db
     restart: always
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
     volumes:
       # - postgres_data:/var/lib/postgresql/data
       - ./db-samples/dvdrental.tar:/docker-entrypoint-initdb.d/dvdrental.tar
       - ./db-samples/restore-dvdrental.sh:/docker-entrypoint-initdb.d/restore-dvdrental.sh
-    ports:
-      - ${DATABASE_PORT}:5432
-    environment:
-      POSTGRES_USER: ${DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 5s
@@ -27,6 +30,9 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
+    env_file:
+      - path: ./.env
+        required: true
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}

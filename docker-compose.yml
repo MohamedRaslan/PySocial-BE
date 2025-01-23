@@ -8,8 +8,8 @@ services:
     restart: always
     volumes:
       # - postgres_data:/var/lib/postgresql/data
-      - ./samples/dvdrental.tar:/docker-entrypoint-initdb.d/dvdrental.tar
-      - ./samples/restore-dvdrental.sh:/docker-entrypoint-initdb.d/restore-dvdrental.sh
+      - ./db-samples/dvdrental.tar:/docker-entrypoint-initdb.d/dvdrental.tar
+      - ./db-samples/restore-dvdrental.sh:/docker-entrypoint-initdb.d/restore-dvdrental.sh
     ports:
       - ${DATABASE_PORT}:5432
     environment:
@@ -34,7 +34,7 @@ services:
       - 5050:80
     volumes:
       - ./outs/pgadmin:/var/lib/pgadmin
-      - ./samples/servers.json:/pgadmin4/servers.json
+      - ./db-samples/servers.json:/pgadmin4/servers.json
     depends_on:
       postgres:
         condition: service_healthy

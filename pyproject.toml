@@ -30,3 +30,5 @@ distribution = true
 
 [tool.pdm.scripts] # https://pdm-project.org/latest/usage/scripts/
 _.env_file = ".env.dev"
+dev = "fastapi dev ./src/app/main.py"
+generate = "python ./generate_docs.py"

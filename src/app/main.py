@@ -1,6 +1,6 @@
 from random import randrange
 from typing import Optional
-from fastapi import  FastAPI, HTTPException , status
+from fastapi import  FastAPI, HTTPException, Response , status
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -16,12 +16,12 @@ my_post = [{"title": "Hello World", "content": "This is my first post", "publish
            {"title": "Second Post", "content": "This is my second post", "published": True, "rating": 4, "id": 2},
            {"title": "Third Post", "content": "This is my third post", "published": False, "rating": 3, "id": 3}]
 
-def find_post(id):
-    for post in my_post:
-        if post["id"] == id:
-            return post
-    return None
 
+def find_index_post(id):
+    for i in range(len(my_post)):
+        if my_post[i]["id"] == id:
+            return i
+    return None
 
 @app.get("/")
 async def root():
@@ -38,10 +38,10 @@ async def get_latest_post():
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int ):
 
-    post = find_post(post_id)
-    if not post:
+    index = find_index_post(post_id)
+    if not index:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
-    return {"data": post}
+    return {"data": my_post[index]}
 
 
 # create a post
@@ -51,3 +51,27 @@ async def create_post(post: Post):
     post_dict["id"] = randrange(9, 99999999999999)
     my_post.append(post_dict)
     return {"data": post_dict }
+
+
+@app.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(post_id: int):
+    index = find_index_post(post_id)
+    if not index:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
+    my_post.pop(index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.put("/posts/{post_id}")
+async def update_post(post_id: int, post: Post):
+    post_dict = post.model_dump()
+    index = find_index_post(post_id)
+    if not index:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
+
+    post_dict["id"] = my_post[index]["id"]
+    my_post[index] = post_dict
+
+    return {"data": post_dict}
+
+

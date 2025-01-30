@@ -15,10 +15,10 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - ${DB_PORT}:5432
-    volumes:
-      # - postgres_data:/var/lib/postgresql/data
-      - ./DB/samples/dvdrental.tar:/docker-entrypoint-initdb.d/dvdrental.tar
-      - ./DB/samples/restore-dvdrental.sh:/docker-entrypoint-initdb.d/restore-dvdrental.sh
+    # volumes:
+    #   # - postgres_data:/var/lib/postgresql/data
+    #   - ./DB/samples/dvdrental.tar:/docker-entrypoint-initdb.d/dvdrental.tar
+    #   - ./DB/samples/restore-dvdrental.sh:/docker-entrypoint-initdb.d/restore-dvdrental.sh
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${DB_USERNAME}", "-d", "${DB_NAME}"]
       interval: 5s
@@ -40,7 +40,7 @@ services:
       - 5050:80
     volumes:
       - ./outs/pgadmin:/var/lib/pgadmin
-      - ./DB/samples/servers.json:/pgadmin4/servers.json
+    #  - ./DB/samples/servers.json:/pgadmin4/servers.json
     depends_on:
       postgres:
         condition: service_healthy

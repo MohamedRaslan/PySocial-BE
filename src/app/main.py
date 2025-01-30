@@ -1,10 +1,32 @@
+import logging
+from typing import Optional, AsyncIterator
+from contextlib import asynccontextmanager
 from random import randrange
-from typing import Optional
+import os
 from fastapi import  FastAPI, HTTPException, Response , status
 from pydantic import BaseModel
 
-app = FastAPI()
 
+# Get the logger for the app
+logger = logging.getLogger("uvicorn.error")
+
+# Define the lifespan event handler
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    # Startup logic
+    host = os.getenv("HOST", "localhost")
+    port = os.getenv("PORT", "8000")
+    logger.info("App documentation available at:")
+    logger.info("Swagger :: http://%s:%s/redoc", host, port)
+    logger.info("Redoc   :: http://%s:%s/docs\n", host, port)
+
+    yield  # The app is now running
+
+    # Shutdown logic (if needed)
+    logger.info("Shutting down...")
+
+# Pass the lifespan handler to the FastAPI app
+app = FastAPI(lifespan=lifespan)
 
 class Post(BaseModel):
     title: str

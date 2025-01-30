@@ -29,6 +29,6 @@ build-backend = "pdm.backend"
 distribution = true
 
 [tool.pdm.scripts] # https://pdm-project.org/latest/usage/scripts/
-_.env_file = ".env.dev"
+_.env_file = ".env"
 dev = "fastapi dev ./src/app/main.py"
 generate = "python ./generate_docs.py"
